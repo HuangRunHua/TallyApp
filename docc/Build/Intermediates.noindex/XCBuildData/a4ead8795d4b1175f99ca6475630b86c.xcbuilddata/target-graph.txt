@@ -1,0 +1,6 @@
+Target dependency graph (3 targets)
+Target 'TallyAppTests' in project 'TallyApp'
+➜ Explicit dependency on target 'TallyApp' in project 'TallyApp'
+Target 'TallyApp' in project 'TallyApp'
+➜ Explicit dependency on target 'TallyApp' in project 'TallyApp'
+Target 'TallyApp' in project 'TallyApp' (no dependencies)
