@@ -1,0 +1,18 @@
+{
+  "" : {
+    "diagnostics" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp-master.dia",
+    "emit-module-dependencies" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp-master-emit-module.dia",
+    "swift-dependencies" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp-master.swiftdeps"
+  },
+  "/Users/huangrunhua/Downloads/GitHub/TallyApp/Sources/TallyApp/TallyApp.swift" : {
+    "const-values" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp.swiftconstvalues",
+    "dependencies" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp.d",
+    "diagnostics" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp.dia",
+    "index-unit-output-path" : "/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp.o",
+    "llvm-bc" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp.bc",
+    "object" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp.o",
+    "swift-dependencies" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp.swiftdeps",
+    "swiftmodule" : "/Users/huangrunhua/Downloads/GitHub/TallyApp/docc/Build/Intermediates.noindex/TallyApp.build/Debug-iphoneos/TallyApp.build/Objects-normal/arm64/TallyApp~partial.swiftmodule"
+  }
+}
