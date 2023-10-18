@@ -1,0 +1,4 @@
+module TallyApp {
+header "TallyApp-Swift.h"
+export *
+}
