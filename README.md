@@ -4,7 +4,7 @@
 Simplicity is paramount, exquisite and practical, allowing you to grasp all financial information in an instant, with a soothing and pleasant use experience, and easily accomplish every accounting.
 
 ### Download
-You can download WeTally from [App Store]().
+You can download WeTally from [App Store](https://apps.apple.com/app/wetally-daily-money-tracker/id6470998669).
 
 ### App Features
 
