@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeTally — Your Money, Beautifully Organized</title>
+  <meta name="description" content="WeTally is a minimalist accounting app for iOS. Multiple ledgers, smart analytics, savings goals, reimbursement tracking — all in one beautiful place.">
+  <meta property="og:title" content="WeTally — Your Money, Beautifully Organized">
+  <meta property="og:description" content="The minimalist accounting app that makes tracking every expense feel effortless.">
+  <meta property="og:image" content="https://huangrunhua.github.io/TallyApp/assets/screenshot-home.png">
+  <meta property="og:url" content="https://huangrunhua.github.io/TallyApp/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="apple-touch-icon" href="assets/app-icon.png">
+  <link rel="icon" href="assets/app-icon.png" type="image/png">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+    :root {
+      --color-bg: #fff;
+      --color-bg-alt: #f5f5f7;
+      --color-bg-dark: #1d1d1f;
+      --color-text: #1d1d1f;
+      --color-text-secondary: #86868b;
+      --color-text-light: #f5f5f7;
+      --color-accent: #0071e3;
+      --color-accent-hover: #0077ed;
+      --nav-height: 48px;
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: var(--font);
+      color: var(--color-text);
+      background: var(--color-bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: rgba(0, 113, 227, .2); }
+    img { max-width: 100%; display: block; }
+    a { color: var(--color-accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ==================== NAV ==================== */
+    .global-nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-height); z-index: 9999;
+      background: rgba(255,255,255,.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,.08);
+      transition: background .36s, border-color .36s;
+    }
+    .global-nav.dark-mode {
+      background: rgba(29,29,31,.82);
+      border-bottom-color: rgba(255,255,255,.08);
+    }
+    .global-nav.dark-mode .nav-logo { color: var(--color-text-light); }
+    .global-nav.dark-mode .nav-logo-icon { filter: brightness(10); }
+    .nav-inner {
+      max-width: 980px; margin: 0 auto; padding: 0 22px;
+      height: 100%; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 18px; font-weight: 700; color: var(--color-text);
+      letter-spacing: -.02em; transition: color .36s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo-icon {
+      width: 28px; height: 28px; border-radius: 6px;
+      transition: filter .36s;
+    }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a {
+      font-size: 12px; color: var(--color-text-secondary);
+      transition: color .2s; font-weight: 500;
+    }
+    .nav-links a:hover { color: var(--color-text); text-decoration: none; }
+    .global-nav.dark-mode .nav-links a { color: #a1a1a6; }
+    .global-nav.dark-mode .nav-links a:hover { color: #f5f5f7; }
+    .nav-cta {
+      font-size: 12px; font-weight: 600;
+      background: var(--color-accent); color: #fff !important;
+      padding: 6px 16px; border-radius: 980px; transition: background .3s;
+    }
+    .nav-cta:hover { background: var(--color-accent-hover); text-decoration: none !important; }
+
+    /* ==================== HERO ==================== */
+    .hero {
+      min-height: 100vh;
+      padding: calc(var(--nav-height) + 80px) 22px 80px;
+      text-align: center; overflow: hidden;
+      background: linear-gradient(180deg, #fff 0%, #f0f4ff 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .hero-eyebrow {
+      font-size: clamp(14px, 2vw, 17px); font-weight: 600;
+      color: var(--color-accent); margin-bottom: 12px;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .8s .2s ease forwards;
+    }
+    .hero-title {
+      font-size: clamp(56px, 11vw, 96px); font-weight: 800;
+      letter-spacing: -.04em; line-height: 1.05; margin-bottom: 16px;
+      background: linear-gradient(135deg, #1d1d1f 0%, #0071e3 50%, #5856d6 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeUp .8s .4s ease forwards, gradientShift 6s ease infinite;
+      opacity: 0; transform: translateY(20px);
+    }
+    .hero-subtitle {
+      font-size: clamp(20px, 3.5vw, 32px); font-weight: 600;
+      color: var(--color-text); line-height: 1.2; margin-bottom: 16px;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .8s .6s ease forwards;
+    }
+    .hero-desc {
+      font-size: clamp(15px, 2vw, 19px); color: var(--color-text-secondary);
+      max-width: 540px; margin: 0 auto 40px; line-height: 1.5;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .8s .8s ease forwards;
+    }
+    .hero-cta-row {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 64px;
+      opacity: 0; transform: translateY(20px);
+      animation: fadeUp .8s 1s ease forwards;
+    }
+    .hero-device {
+      max-width: 320px; margin: 0 auto;
+      opacity: 0; transform: translateY(40px);
+      animation: fadeUp 1s 1.1s ease forwards;
+    }
+    .hero-device .phone-img-shadow { animation: float 6s ease-in-out infinite; }
+
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* ==================== PHONE IMAGE ==================== */
+    .phone-img {
+      width: 100%; display: block;
+    }
+    .phone-img-shadow {
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,.18));
+    }
+
+    /* ==================== DEVICE FRAME (for plain screenshots only) ==================== */
+    .device-frame {
+      position: relative; border-radius: 40px; background: #1d1d1f; padding: 12px;
+      box-shadow: 0 40px 80px rgba(0,0,0,.18), 0 0 0 1px rgba(255,255,255,.08) inset;
+    }
+    .device-frame img { border-radius: 28px; width: 100%; display: block; }
+    .device-frame::before {
+      content: ''; position: absolute; top: 18px; left: 50%;
+      transform: translateX(-50%); width: 80px; height: 22px;
+      background: #1d1d1f; border-radius: 20px; z-index: 5;
+    }
+
+    /* ==================== BUTTONS ==================== */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--color-accent); color: #fff;
+      padding: 14px 28px; border-radius: 980px;
+      font-size: 17px; font-weight: 600; font-family: var(--font);
+      border: none; cursor: pointer; transition: all .3s;
+    }
+    .btn-primary:hover { background: var(--color-accent-hover); text-decoration: none; transform: scale(1.02); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--color-accent); font-size: 17px; font-weight: 600;
+      padding: 14px 28px; border-radius: 980px;
+      border: 1.5px solid var(--color-accent); background: transparent;
+      transition: all .3s; font-family: var(--font); cursor: pointer;
+    }
+    .btn-secondary:hover { background: rgba(0,113,227,.06); text-decoration: none; }
+
+    /* ==================== SECTION COMMON ==================== */
+    .section { padding: clamp(100px, 16vh, 180px) 22px; position: relative; }
+    .section-inner { max-width: 980px; margin: 0 auto; }
+    .section-eyebrow {
+      font-size: clamp(20px, 3vw, 24px); font-weight: 700;
+      color: var(--color-accent); margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(40px, 7vw, 64px); font-weight: 800;
+      letter-spacing: -.035em; line-height: 1.06; margin-bottom: 20px;
+    }
+    .section-body {
+      font-size: clamp(16px, 1.8vw, 21px); color: var(--color-text-secondary);
+      line-height: 1.5; max-width: 500px;
+    }
+    .section--dark { background: var(--color-bg-dark); color: var(--color-text-light); }
+    .section--dark .section-body { color: #a1a1a6; }
+    .section--dark .section-eyebrow { color: #6e9eff; }
+    .section--alt { background: var(--color-bg-alt); }
+
+    /* ==================== SCROLL ANIMATIONS ==================== */
+    .reveal {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity .8s cubic-bezier(.215,.61,.355,1), transform .8s cubic-bezier(.215,.61,.355,1);
+    }
+    .reveal.from-left { transform: translateX(-60px) translateY(0); }
+    .reveal.from-right { transform: translateX(60px) translateY(0); }
+    .reveal.scale-in { transform: scale(.88); }
+    .reveal.visible { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
+    .delay-1 { transition-delay: .1s; }
+    .delay-2 { transition-delay: .2s; }
+    .delay-3 { transition-delay: .3s; }
+    .delay-4 { transition-delay: .4s; }
+    .delay-5 { transition-delay: .5s; }
+    .delay-6 { transition-delay: .6s; }
+
+    /* ==================== FEATURE HIGHLIGHTS GRID ==================== */
+    .highlights { background: var(--color-bg); }
+    .highlights .section-title { text-align: center; }
+    .highlights .section-body { text-align: center; margin: 0 auto 72px; max-width: 600px; }
+    .highlights-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    }
+    .highlight-card {
+      background: var(--color-bg-alt); border-radius: 24px;
+      padding: 44px 28px; text-align: center;
+      transition: transform .4s cubic-bezier(.215,.61,.355,1), box-shadow .4s;
+      cursor: default; position: relative; overflow: hidden;
+    }
+    .highlight-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,113,227,.04) 0%, transparent 60%);
+      opacity: 0; transition: opacity .4s;
+    }
+    .highlight-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,.08); }
+    .highlight-card:hover::before { opacity: 1; }
+    .highlight-card .card-icon {
+      width: 56px; height: 56px; margin: 0 auto 20px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .highlight-card .card-icon svg { width: 28px; height: 28px; }
+    .highlight-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .highlight-card p { font-size: 15px; color: var(--color-text-secondary); line-height: 1.45; }
+
+    /* ==================== STICKY SHOWCASE (Apple-style) ==================== */
+    .sticky-showcase {
+      position: relative; background: #000; color: #fff;
+    }
+    .sticky-showcase-inner {
+      position: sticky; top: 0; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .showcase-content {
+      max-width: 980px; margin: 0 auto; padding: 0 22px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+      width: 100%;
+    }
+    .showcase-text { position: relative; min-height: 280px; }
+    .showcase-slide {
+      position: absolute; top: 50%; left: 0; right: 0;
+      transform: translateY(-50%);
+      opacity: 0; transition: opacity .6s ease, transform .6s ease;
+    }
+    .showcase-slide.active { opacity: 1; transform: translateY(-50%); }
+    .showcase-slide.below { transform: translateY(calc(-50% + 60px)); }
+    .showcase-slide.above { transform: translateY(calc(-50% - 60px)); }
+    .showcase-slide .section-eyebrow { color: #56c1ff; }
+    .showcase-slide .section-body { color: #a1a1a6; }
+    .showcase-visual {
+      display: flex; justify-content: center; align-items: center; position: relative;
+    }
+    .showcase-visual .phone-img {
+      max-width: 280px; width: 100%;
+      transition: transform .8s cubic-bezier(.215,.61,.355,1), opacity .6s;
+    }
+    .showcase-phone-wrap {
+      position: relative; width: 100%; display: flex; justify-content: center;
+    }
+    .showcase-phone-wrap .phone-img {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0; transition: opacity .6s ease, transform .6s ease;
+    }
+    .showcase-phone-wrap .phone-img.active {
+      opacity: 1; transform: translate(-50%, -50%) scale(1);
+    }
+    .showcase-phone-wrap .phone-img.below {
+      opacity: 0; transform: translate(-50%, -40%) scale(.95);
+    }
+    .showcase-phone-wrap .phone-img.above {
+      opacity: 0; transform: translate(-50%, -60%) scale(.95);
+    }
+    .showcase-progress {
+      position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 12px; z-index: 10;
+    }
+    .showcase-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.25); transition: all .4s;
+    }
+    .showcase-dot.active { background: #fff; transform: scale(1.4); }
+
+    /* ==================== FEATURE GRID LAYOUT ==================== */
+    .feature-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .feature-grid--reverse .feature-text { order: 2; }
+    .feature-grid--reverse .feature-visual { order: 1; }
+    .feature-visual {
+      display: flex; justify-content: center;
+    }
+    .feature-visual .phone-img { max-width: 280px; width: 100%; }
+    .feature-visual .phone-img-shadow { max-width: 280px; width: 100%; }
+    .feature-visual .device-frame { max-width: 260px; width: 100%; }
+
+    /* ==================== ANALYTICS SECTION ==================== */
+    .analytics-section {
+      background: linear-gradient(180deg, #1d1d1f 0%, #0a0a2e 100%);
+      color: #fff;
+    }
+    .analytics-section .section-eyebrow { color: #bf5af2; }
+    .analytics-section .section-body { color: #a1a1a6; }
+
+    /* ==================== SAVINGS SECTION ==================== */
+    .savings-section {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #fff;
+    }
+    .savings-section .section-eyebrow { color: #30d158; }
+    .savings-section .section-body { color: #a1a1a6; }
+    .progress-ring-container {
+      display: flex; justify-content: center; align-items: center;
+      margin: 48px auto 0; position: relative;
+    }
+    .progress-ring { transform: rotate(-90deg); }
+    .progress-ring-bg { fill: none; stroke: rgba(255,255,255,.1); stroke-width: 8; }
+    .progress-ring-fill {
+      fill: none; stroke: url(#ringGradient); stroke-width: 8;
+      stroke-linecap: round; transition: stroke-dashoffset 2s cubic-bezier(.215,.61,.355,1);
+    }
+    .progress-ring-text {
+      position: absolute; text-align: center;
+    }
+    .progress-ring-text .amount {
+      font-size: 36px; font-weight: 800; letter-spacing: -.02em; display: block;
+    }
+    .progress-ring-text .label {
+      font-size: 14px; color: #a1a1a6; font-weight: 500;
+    }
+
+    /* ==================== PLATFORM SECTION ==================== */
+    .platform-section { background: var(--color-bg); }
+    .platform-section .section-title { text-align: center; }
+    .platform-section .section-body { text-align: center; margin: 0 auto 72px; max-width: 600px; }
+    .platform-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .platform-card {
+      background: var(--color-bg-alt); border-radius: 24px; padding: 40px 28px;
+      text-align: center; transition: transform .4s, box-shadow .4s;
+      overflow: hidden; position: relative;
+    }
+    .platform-card:hover {
+      transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.06);
+    }
+    .platform-card .card-icon {
+      width: 64px; height: 64px; margin: 0 auto 24px; border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .platform-card .card-icon svg { width: 32px; height: 32px; }
+    .platform-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .platform-card p { font-size: 15px; color: var(--color-text-secondary); line-height: 1.45; }
+
+    /* ==================== IMPORT SECTION ==================== */
+    .import-section { background: var(--color-bg-dark); color: #fff; }
+    .import-section .section-eyebrow { color: #ff9f0a; }
+    .import-section .section-body { color: #a1a1a6; }
+    .import-badges {
+      display: flex; gap: 16px; margin-top: 32px; flex-wrap: wrap;
+    }
+    .import-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px; padding: 14px 24px;
+      font-size: 16px; font-weight: 600; color: #fff; transition: background .3s;
+    }
+    .import-badge:hover { background: rgba(255,255,255,.14); }
+    .import-badge svg { width: 24px; height: 24px; }
+
+    /* ==================== COUNTER ==================== */
+    .counter-row {
+      display: flex; gap: 48px; margin-top: 48px; flex-wrap: wrap;
+    }
+    .counter-item { text-align: left; }
+    .counter-value {
+      font-size: 48px; font-weight: 800; letter-spacing: -.03em; line-height: 1;
+    }
+    .counter-label {
+      font-size: 14px; color: #a1a1a6; font-weight: 500; margin-top: 4px;
+    }
+
+    /* ==================== CHART BARS ==================== */
+    .chart-bars {
+      display: flex; gap: 8px; align-items: flex-end;
+      height: 200px; margin-top: 40px; padding: 0 20px;
+    }
+    .chart-bar {
+      flex: 1; border-radius: 6px 6px 0 0;
+      transition: height 1.2s cubic-bezier(.215,.61,.355,1);
+      height: 0;
+    }
+    .chart-labels {
+      display: flex; gap: 8px; padding: 8px 20px 0;
+    }
+    .chart-labels span {
+      flex: 1; text-align: center; font-size: 11px;
+      color: var(--color-text-secondary); font-weight: 500;
+    }
+
+    /* ==================== PRICING ==================== */
+    .pricing-section { background: var(--color-bg-alt); }
+    .pricing-section .section-title { text-align: center; }
+    .pricing-section .section-body { text-align: center; margin: 0 auto 64px; max-width: 600px; }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+      max-width: 900px; margin: 0 auto;
+    }
+    .price-card {
+      background: #fff; border-radius: 24px; padding: 44px 28px;
+      text-align: center; border: 1.5px solid rgba(0,0,0,.06);
+      transition: transform .4s, box-shadow .4s;
+    }
+    .price-card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,.08); }
+    .price-card.featured {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 1px var(--color-accent), 0 8px 30px rgba(0,113,227,.12);
+      position: relative;
+    }
+    .price-card.featured::before {
+      content: 'Best Value'; position: absolute; top: -13px; left: 50%;
+      transform: translateX(-50%); background: var(--color-accent);
+      color: #fff; font-size: 12px; font-weight: 600;
+      padding: 4px 18px; border-radius: 980px;
+    }
+    .price-period { font-size: 16px; color: var(--color-text-secondary); font-weight: 600; margin-bottom: 12px; }
+    .price-amount { font-size: 52px; font-weight: 800; letter-spacing: -.03em; margin-bottom: 4px; }
+    .price-amount span { font-size: 20px; font-weight: 600; color: var(--color-text-secondary); }
+    .price-unit { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 28px; }
+    .price-desc { font-size: 14px; color: var(--color-text-secondary); line-height: 1.5; }
+    .price-trial { font-size: 13px; color: var(--color-accent); font-weight: 600; margin-top: 20px; }
+
+    /* ==================== DESIGN SHOWCASE ==================== */
+    .design-showcase {
+      display: flex; justify-content: center; align-items: center;
+      gap: 24px;
+    }
+    .design-showcase .phone-img-shadow { max-width: 260px; flex-shrink: 0; }
+    .design-showcase .phone-img-shadow:first-child,
+    .design-showcase .phone-img-shadow:last-child {
+      transform: scale(.88); opacity: .85;
+    }
+    .design-showcase .design-showcase-center {
+      transform: scale(1.02); opacity: 1; z-index: 2;
+      filter: drop-shadow(0 40px 80px rgba(0,0,0,.3));
+    }
+    @media (max-width: 960px) {
+      .design-showcase { gap: 12px; }
+      .design-showcase .phone-img-shadow { max-width: 200px; }
+    }
+    @media (max-width: 768px) {
+      .design-showcase { flex-direction: column; align-items: center; gap: 20px; }
+      .design-showcase .phone-img-shadow { max-width: 260px !important; }
+      .design-showcase .phone-img-shadow:first-child,
+      .design-showcase .phone-img-shadow:last-child { transform: scale(1); opacity: 1; }
+      .design-showcase .design-showcase-center { transform: scale(1); filter: drop-shadow(0 30px 60px rgba(0,0,0,.18)); }
+    }
+
+    /* ==================== DOWNLOAD CTA ==================== */
+    .download-section {
+      text-align: center; padding: clamp(100px, 16vh, 180px) 22px;
+      background: linear-gradient(180deg, #f5f5f7 0%, #e8ecf4 50%, #dfe7f5 100%);
+      position: relative; overflow: hidden;
+    }
+    .download-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(0,113,227,.06) 0%, transparent 60%);
+    }
+    .download-section .section-title { margin-bottom: 12px; }
+    .download-section .section-body { margin: 0 auto 48px; max-width: 520px; }
+    .app-store-badge {
+      display: inline-block; transition: transform .3s;
+    }
+    .app-store-badge:hover { transform: scale(1.04); text-decoration: none; }
+    .app-store-badge img { height: 54px; }
+
+    /* ==================== FOOTNOTES ==================== */
+    .footnotes-section {
+      background: var(--color-bg-alt); padding: 40px 22px 0;
+      border-top: 1px solid rgba(0,0,0,.06);
+    }
+    .footnotes-inner { max-width: 980px; margin: 0 auto; }
+    .footnotes-list {
+      list-style: decimal; padding-left: 20px;
+      font-size: 11px; line-height: 1.6; color: var(--color-text-secondary);
+    }
+    .footnotes-list li { margin-bottom: 8px; }
+
+    /* ==================== FOOTER ==================== */
+    .site-footer { background: var(--color-bg-alt); padding: 24px 22px; }
+    .footer-inner { max-width: 980px; margin: 0 auto; }
+    .footer-links {
+      display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px;
+    }
+    .footer-links a { font-size: 12px; color: var(--color-text-secondary); font-weight: 500; }
+    .footer-links a:hover { color: var(--color-text); }
+    .footer-divider { border: none; border-top: 1px solid rgba(0,0,0,.06); margin: 16px 0; }
+    .footer-copy { font-size: 12px; color: var(--color-text-secondary); text-align: center; }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 768px) {
+      .feature-grid {
+        grid-template-columns: 1fr; gap: 40px; text-align: center;
+      }
+      .feature-grid--reverse .feature-text,
+      .feature-grid--reverse .feature-visual { order: unset; }
+      .feature-visual .phone-img { max-width: 240px; margin: 0 auto; }
+      .feature-visual .phone-img-shadow { max-width: 240px; margin: 0 auto; }
+      .section-body { margin-left: auto; margin-right: auto; }
+      .highlights-grid { grid-template-columns: 1fr; gap: 16px; }
+      .platform-grid { grid-template-columns: 1fr; gap: 16px; }
+      .pricing-grid {
+        grid-template-columns: 1fr; gap: 16px;
+        max-width: 380px; margin-left: auto; margin-right: auto;
+      }
+      .hero-device { max-width: 260px; }
+      .nav-links a:not(.nav-cta) { display: none; }
+      .sticky-showcase { display: none; }
+      .sticky-showcase-mobile { display: block !important; }
+      .chart-bars { height: 140px; }
+      .counter-row { gap: 32px; justify-content: center; }
+      .counter-item { text-align: center; }
+      .import-badges { justify-content: center; }
+      .counter-value { font-size: 36px; }
+    }
+
+    @media (min-width: 769px) {
+      .sticky-showcase-mobile { display: none !important; }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .highlights-grid { grid-template-columns: repeat(2, 1fr); }
+      .platform-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ NAVIGATION ============ -->
+  <nav class="global-nav" id="globalNav">
+    <div class="nav-inner">
+      <span class="nav-logo">
+        <img class="nav-logo-icon" src="assets/app-icon.png" alt="WeTally icon" width="28" height="28">
+        WeTally
+      </span>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a class="nav-cta" href="https://apps.apple.com/app/wetally-daily-money-tracker/id6470998669">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-eyebrow">Introducing WeTally</div>
+    <h1 class="hero-title">Your money.<br>Beautifully organized.</h1>
+    <p class="hero-subtitle">Minimalist accounting for your everyday life.</p>
+    <p class="hero-desc">Track expenses and income effortlessly across multiple ledgers. Stunning analytics, savings goals, reimbursement tracking — everything you need to take control of your finances, nothing you don't.</p>
+    <div class="hero-cta-row">
+      <a class="btn-primary" href="https://apps.apple.com/app/wetally-daily-money-tracker/id6470998669">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Download on the App Store
+      </a>
+      <a class="btn-secondary" href="#features">Learn more ↓</a>
+    </div>
+    <div class="hero-device">
+      <div class="phone-img-shadow">
+        <img class="phone-img" src="assets/screenshot-home.png" alt="WeTally — multiple ledgers on home screen" loading="eager">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURE HIGHLIGHTS ============ -->
+  <section class="section highlights" id="features">
+    <div class="section-inner">
+      <h2 class="section-title reveal">Everything you need.<br>Nothing you don't.</h2>
+      <p class="section-body reveal delay-1">WeTally is designed around the way you actually manage money — simple, beautiful, and powerful when you need it.</p>
+      <div class="highlights-grid">
+        <div class="highlight-card reveal delay-1">
+          <div class="card-icon" style="background:linear-gradient(135deg,#0a84ff,#5e5ce6)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M21 18v1c0 1.1-.9 2-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14c1.1 0 2 .9 2 2v1h-9a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+          </div>
+          <h3>Multiple Ledgers</h3>
+          <p>Organize by trip, project, or lifestyle. Each ledger — its own world of transactions and budgets.</p>
+        </div>
+        <div class="highlight-card reveal delay-2">
+          <div class="card-icon" style="background:linear-gradient(135deg,#5e5ce6,#bf5af2)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M3 3v18h18V3H3zm2 2h14v14H5V5zm2 10h2V9H7v6zm4 0h2V7h-2v8zm4 0h2v-4h-2v4z"/></svg>
+          </div>
+          <h3>Smart Analytics</h3>
+          <p>Day, week, month, year — intuitive charts that reveal where your money actually goes.</p>
+        </div>
+        <div class="highlight-card reveal delay-3">
+          <div class="card-icon" style="background:linear-gradient(135deg,#34c759,#30d158)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l5.59-5.59L18 10l-7 7z"/></svg>
+          </div>
+          <h3>Savings Goals</h3>
+          <p>Set a goal, track your progress, and watch your dream get closer — one deposit at a time.</p>
+        </div>
+        <div class="highlight-card reveal delay-4">
+          <div class="card-icon" style="background:linear-gradient(135deg,#ff9f0a,#ff6723)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+          </div>
+          <h3>Reimbursement</h3>
+          <p>Mark expenses for reimbursement and always see your actual spending — net of what's owed back.</p>
+        </div>
+        <div class="highlight-card reveal delay-5">
+          <div class="card-icon" style="background:linear-gradient(135deg,#0a84ff,#007aff)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+          </div>
+          <h3>iCloud Sync</h3>
+          <p>Your data, everywhere you go. Seamlessly synced across all your Apple devices.</p>
+        </div>
+        <div class="highlight-card reveal delay-6">
+          <div class="card-icon" style="background:linear-gradient(135deg,#64d2ff,#5ac8fa)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M3 13h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm0 8h2v-2H3v2zm4-12h2V3H7v2zm8 16h2v-2h-2v2zm4-4h2v-2h-2v2zm0-12v2h2V5h-2zm0 8h2v-2h-2v2zM7 9h2V7H7v2zm8-4h2V3h-2v2zm-4 16h2v-2h-2v2zm0-16h2V3h-2v2zm0 8h2v-2h-2v2z"/></svg>
+          </div>
+          <h3>Widgets</h3>
+          <p>Glance at your daily spending right from the Home Screen. Beautiful, always up to date.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STICKY SHOWCASE: Multi-Ledger (Desktop) ============ -->
+  <div class="sticky-showcase" id="stickyShowcase" style="height: 300vh;">
+    <div class="sticky-showcase-inner">
+      <div class="showcase-content">
+        <div class="showcase-text">
+          <div class="showcase-slide active" data-slide="0">
+            <div class="section-eyebrow">Multiple Ledgers</div>
+            <h2 class="section-title" style="color:#fff">Carry all your ledgers.<br>In one place.</h2>
+            <p class="section-body">Like cards in Apple Wallet, your ledgers stack beautifully on the home screen. Tap to expand. Swipe to explore. Each ledger, its own world.</p>
+          </div>
+          <div class="showcase-slide below" data-slide="1">
+            <div class="section-eyebrow">Ledger at a Glance</div>
+            <h2 class="section-title" style="color:#fff">Every detail.<br>Right there.</h2>
+            <p class="section-body">Tap a ledger to see everything — total spending, income, balance, and activity views by day, week, month, or year. Beautiful card headers make each ledger uniquely yours.</p>
+          </div>
+          <div class="showcase-slide below" data-slide="2">
+            <div class="section-eyebrow">Total Balance</div>
+            <h2 class="section-title" style="color:#fff">The big picture.<br>At a glance.</h2>
+            <p class="section-body">See your complete financial snapshot across all ledgers. Protected by Face ID or Touch ID. Your money, your eyes only.</p>
+          </div>
+        </div>
+        <div class="showcase-visual">
+          <div class="showcase-phone-wrap" style="min-height:560px;">
+            <img class="phone-img active" src="assets/screenshot-home.png" alt="Multiple ledgers" data-slide="0" loading="lazy">
+            <img class="phone-img below" src="assets/screenshot-ledger-detail.png" alt="Ledger detail with activity views" data-slide="1" loading="lazy" style="max-width: 260px;">
+            <img class="phone-img below" src="assets/screenshot-balance.png" alt="Total balance overview" data-slide="2" loading="lazy" style="max-width: 260px;">
+          </div>
+        </div>
+      </div>
+      <div class="showcase-progress" id="showcaseDots">
+        <div class="showcase-dot active"></div>
+        <div class="showcase-dot"></div>
+        <div class="showcase-dot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ STICKY SHOWCASE: Mobile Fallback ============ -->
+  <div class="sticky-showcase-mobile" style="display:none;">
+    <section class="section section--dark">
+      <div class="section-inner">
+        <div class="feature-grid">
+          <div class="feature-text">
+            <div class="section-eyebrow reveal" style="color:#56c1ff">Multiple Ledgers</div>
+            <h2 class="section-title reveal delay-1">Carry all your ledgers.<br>In one place.</h2>
+            <p class="section-body reveal delay-2">Like cards in Apple Wallet, your ledgers stack beautifully on the home screen. Each ledger, its own world of transactions and budgets.</p>
+          </div>
+          <div class="feature-visual reveal delay-3 scale-in">
+            <div class="phone-img-shadow">
+              <img class="phone-img" src="assets/screenshot-home.png" alt="Multiple ledgers" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ ANALYTICS ============ -->
+  <section class="section analytics-section">
+    <div class="section-inner">
+      <div class="feature-grid">
+        <div class="feature-text">
+          <div class="section-eyebrow reveal">Smart Analytics</div>
+          <h2 class="section-title reveal delay-1">From recording<br>to understanding.</h2>
+          <p class="section-body reveal delay-2">Day. Week. Month. Year. WeTally breaks down your spending and income with stunning charts — category trends, balance history, and budget tracking. Always know where you stand.</p>
+          <div class="counter-row reveal delay-3">
+            <div class="counter-item">
+              <div class="counter-value" style="color:#bf5af2"><span class="counter" data-target="4">0</span></div>
+              <div class="counter-label">Time views</div>
+            </div>
+            <div class="counter-item">
+              <div class="counter-value" style="color:#bf5af2"><span class="counter" data-target="12">0</span></div>
+              <div class="counter-label">Months of trends</div>
+            </div>
+            <div class="counter-item">
+              <div class="counter-value" style="color:#bf5af2">∞</div>
+              <div class="counter-label">Insights</div>
+            </div>
+          </div>
+        </div>
+        <div class="feature-visual reveal delay-3 scale-in">
+          <div class="phone-img-shadow">
+            <img class="phone-img" src="assets/screenshot-balance-trend.png" alt="Balance trend chart with monthly breakdown" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUICK ENTRY ============ -->
+  <section class="section" style="background: #fff;">
+    <div class="section-inner">
+      <div class="feature-grid feature-grid--reverse">
+        <div class="feature-text">
+          <div class="section-eyebrow reveal">Quick Entry</div>
+          <h2 class="section-title reveal delay-1">Log it.<br>In seconds.</h2>
+          <p class="section-body reveal delay-2">A built-in calculator keyboard, smart categories, payment methods, and transaction platforms. Recording an expense is so fast, you'll actually enjoy doing it.</p>
+        </div>
+        <div class="feature-visual reveal delay-3 scale-in">
+          <div class="phone-img-shadow">
+            <img class="phone-img" src="assets/screenshot-entry.png" alt="Quick transaction entry with calculator keyboard" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SAVINGS GOALS ============ -->
+  <section class="section savings-section">
+    <div class="section-inner">
+      <div class="feature-grid feature-grid--reverse">
+        <div class="feature-text">
+          <div class="section-eyebrow reveal">Savings Goals</div>
+          <h2 class="section-title reveal delay-1">Dream it. Save for it.<br>Get it.</h2>
+          <p class="section-body reveal delay-2">Set a savings goal with a target amount and deadline. Give it a name, an icon, even a cover photo. Track every deposit with a beautiful progress ring — your dream, visualized.</p>
+          <div class="progress-ring-container reveal delay-3" style="margin:32px 0 0;">
+            <svg class="progress-ring" width="160" height="160" viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#30d158"/>
+                  <stop offset="100%" style="stop-color:#34c759"/>
+                </linearGradient>
+              </defs>
+              <circle class="progress-ring-bg" cx="100" cy="100" r="88"/>
+              <circle class="progress-ring-fill" id="progressRing" cx="100" cy="100" r="88"
+                      stroke-dasharray="553" stroke-dashoffset="553"/>
+            </svg>
+            <div class="progress-ring-text">
+              <span class="amount" style="color:#30d158; font-size:28px;" id="ringPercent">0%</span>
+              <span class="label" style="font-size:12px;">of goal reached</span>
+            </div>
+          </div>
+        </div>
+        <div class="feature-visual reveal delay-3 scale-in">
+          <div class="phone-img-shadow">
+            <img class="phone-img" src="assets/screenshot-savings-goal.png" alt="Create savings goal with name and target" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ REIMBURSEMENT ============ -->
+  <section class="section" style="background: var(--color-bg-alt);">
+    <div class="section-inner">
+      <div class="feature-grid">
+        <div class="feature-text">
+          <div class="section-eyebrow reveal">Reimbursement</div>
+          <h2 class="section-title reveal delay-1">Track what<br>you're owed.</h2>
+          <p class="section-body reveal delay-2">Mark any transaction for reimbursement, track its status, and always see your actual spending — net of what's coming back. Perfect for business travelers and shared expenses.</p>
+        </div>
+        <div class="feature-visual reveal delay-3 scale-in">
+          <div class="phone-img-shadow">
+            <img class="phone-img" src="assets/screenshot-reimburse-stats.png" alt="Reimbursement tracking with statistics" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PLATFORM INTEGRATION ============ -->
+  <section class="section platform-section">
+    <div class="section-inner">
+      <h2 class="section-title reveal">Works everywhere<br>you do.</h2>
+      <p class="section-body reveal delay-1">Deeply integrated with iOS — from your Home Screen to Siri. WeTally is always at your fingertips.</p>
+      <div class="platform-grid">
+        <div class="platform-card reveal delay-2">
+          <div class="card-icon" style="background:linear-gradient(135deg,#64d2ff,#5ac8fa)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M3 13h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm0 8h2v-2H3v2zm4-12h2V3H7v2zm8 16h2v-2h-2v2zm4-4h2v-2h-2v2zm0-12v2h2V5h-2zm0 8h2v-2h-2v2zM7 9h2V7H7v2zm8-4h2V3h-2v2zm-4 16h2v-2h-2v2zm0-16h2V3h-2v2zm0 8h2v-2h-2v2z"/></svg>
+          </div>
+          <h3>Widgets</h3>
+          <p>See today's spending, monthly budget progress, and recent transactions right on your Home Screen or Lock Screen.</p>
+        </div>
+        <div class="platform-card reveal delay-3">
+          <div class="card-icon" style="background:linear-gradient(135deg,#ff375f,#ff2d55)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z"/></svg>
+          </div>
+          <h3>Shortcuts</h3>
+          <p>Build powerful automations with Apple Shortcuts. Record expenses, check balances, and query spending — all through App Intents.</p>
+        </div>
+        <div class="platform-card reveal delay-4">
+          <div class="card-icon" style="background:linear-gradient(135deg,#0a84ff,#007aff)">
+            <svg viewBox="0 0 24 24" fill="#fff"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+          </div>
+          <h3>iCloud Sync</h3>
+          <p>All your data is safely stored and synced across iPhone, iPad, and Mac. Seamless, secure, always up to date.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BILL IMPORT ============ -->
+  <section class="section import-section">
+    <div class="section-inner">
+      <div class="feature-grid feature-grid--reverse">
+        <div class="feature-text">
+          <div class="section-eyebrow reveal">Bill Import</div>
+          <h2 class="section-title reveal delay-1" style="color:#fff">Switch in<br>minutes.</h2>
+          <p class="section-body reveal delay-2">Import your existing transaction history from WeChat Pay and Alipay. CSV and XLSX formats supported. Smart category mapping means your data is organized instantly.</p>
+          <div class="import-badges reveal delay-3">
+            <div class="import-badge">
+              <svg viewBox="0 0 24 24" fill="#30d158"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l5.59-5.59L18 10l-7 7z"/></svg>
+              WeChat Pay
+            </div>
+            <div class="import-badge">
+              <svg viewBox="0 0 24 24" fill="#0a84ff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l5.59-5.59L18 10l-7 7z"/></svg>
+              Alipay
+            </div>
+          </div>
+        </div>
+        <div class="feature-visual reveal delay-3 scale-in">
+          <div class="phone-img-shadow">
+            <img class="phone-img" src="assets/screenshot-import.png" alt="Import bills from WeChat Pay and Alipay" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CATEGORY TRENDS ============ -->
+  <section class="section" style="background: #fff;">
+    <div class="section-inner">
+      <div class="feature-grid">
+        <div class="feature-text">
+          <div class="section-eyebrow reveal">Category Trends</div>
+          <h2 class="section-title reveal delay-1">Your spending,<br>decoded.</h2>
+          <p class="section-body reveal delay-2">WeTally automatically tracks 12 months of spending across every category. Spot rising trends, discover saving opportunities, and compare recent months against your average. It's like a financial health check — without the judgment.</p>
+          <div class="chart-bars reveal delay-3" id="budgetChart" style="max-width: 360px;">
+            <div class="chart-bar" style="background: linear-gradient(0deg, #ff9500, #ff6723);" data-height="90%"></div>
+            <div class="chart-bar" style="background: linear-gradient(0deg, #5ac8fa, #0a84ff);" data-height="55%"></div>
+            <div class="chart-bar" style="background: linear-gradient(0deg, #bf5af2, #5e5ce6);" data-height="50%"></div>
+            <div class="chart-bar" style="background: linear-gradient(0deg, #30d158, #34c759);" data-height="40%"></div>
+            <div class="chart-bar" style="background: linear-gradient(0deg, #ff375f, #ff2d55);" data-height="30%"></div>
+            <div class="chart-bar" style="background: linear-gradient(0deg, #64d2ff, #5ac8fa);" data-height="25%"></div>
+            <div class="chart-bar" style="background: linear-gradient(0deg, #ffd60a, #ff9f0a);" data-height="20%"></div>
+          </div>
+          <div class="chart-labels reveal delay-4" style="max-width: 360px;">
+            <span>Food</span><span>Transit</span><span>Fun</span><span>Grocery</span><span>Edu</span><span>Gift</span><span>Sub</span>
+          </div>
+        </div>
+        <div class="feature-visual reveal delay-3 scale-in">
+          <div class="phone-img-shadow">
+            <img class="phone-img" src="assets/screenshot-category-trends.png" alt="Category spending trends with monthly averages" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BEAUTIFUL DESIGN ============ -->
+  <section class="section section--dark">
+    <div class="section-inner" style="text-align:center;">
+      <div class="section-eyebrow reveal" style="text-align:center;">Designed for You</div>
+      <h2 class="section-title reveal delay-1" style="text-align:center;">Minimal by design.<br>Powerful by nature.</h2>
+      <p class="section-body reveal delay-2" style="margin:0 auto 56px; max-width:600px; text-align:center;">Custom ledger themes, beautiful card designs, and a personalized home screen. Dark mode, haptic feedback, and everything in between — WeTally adapts to you.</p>
+      <div class="design-showcase reveal delay-3 scale-in">
+        <div class="phone-img-shadow">
+          <img class="phone-img" src="assets/screenshot-home-cards.png" alt="Home screen with wallet-style ledger cards" loading="lazy">
+        </div>
+        <div class="phone-img-shadow design-showcase-center">
+          <img class="phone-img" src="assets/screenshot-ledger-apple-card.png" alt="Ledger detail with personalized card theme" loading="lazy">
+        </div>
+        <div class="phone-img-shadow">
+          <img class="phone-img" src="assets/screenshot-ledger-detail.png" alt="Ledger overview with activity views" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRICING ============ -->
+  <section class="section pricing-section" id="pricing">
+    <div class="section-inner">
+      <div class="section-eyebrow reveal" style="text-align:center; color: var(--color-accent);">WeTally+</div>
+      <h2 class="section-title reveal delay-1">Choose your plan.</h2>
+      <p class="section-body reveal delay-2">Unlock total balance, advanced analytics, category trends, and more. Every plan starts with a one-month free trial.</p>
+      <div class="pricing-grid">
+        <div class="price-card reveal delay-2">
+          <div class="price-period">Monthly</div>
+          <div class="price-amount">$0.99<span>/mo</span></div>
+          <div class="price-unit">Billed monthly</div>
+          <div class="price-desc">Full access to all premium features. Cancel anytime.</div>
+          <div class="price-trial">1-month free trial</div>
+        </div>
+        <div class="price-card featured reveal delay-3">
+          <div class="price-period">Quarterly</div>
+          <div class="price-amount">$2.99<span>/3mo</span></div>
+          <div class="price-unit">Billed every 3 months</div>
+          <div class="price-desc">Save more with quarterly billing. The best value for committed users.</div>
+          <div class="price-trial">1-month free trial</div>
+        </div>
+        <div class="price-card reveal delay-4">
+          <div class="price-period">Yearly</div>
+          <div class="price-amount">$9.99<span>/yr</span></div>
+          <div class="price-unit">Billed annually</div>
+          <div class="price-desc">Maximum savings. Less than $1 per month for the full experience.</div>
+          <div class="price-trial">1-month free trial</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DOWNLOAD CTA ============ -->
+  <section class="download-section">
+    <div class="section-inner" style="position:relative; z-index:1;">
+      <h2 class="section-title reveal">Start tracking today.</h2>
+      <p class="section-body reveal delay-1">Your journey to effortless, beautiful accounting begins now.</p>
+      <div class="reveal delay-2">
+        <a class="app-store-badge" href="https://apps.apple.com/app/wetally-daily-money-tracker/id6470998669">
+          <img src="assets/app-store-badge-en.svg" alt="Download on the App Store" height="54">
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTNOTES ============ -->
+  <section class="footnotes-section">
+    <div class="footnotes-inner">
+      <ol class="footnotes-list">
+        <li>WeTally requires iOS 16.0 or later. Available on iPhone. Some features require a WeTally+ subscription.</li>
+        <li>Ledger card images shown in screenshots are personal photos uploaded by users from their own photo libraries. They are not included in the app and are shown for illustrative purposes only. WeTally does not provide, distribute, or claim any rights to these images.</li>
+        <li>Apple, the Apple logo, iPhone, iPad, Mac, iCloud, Apple Cash, Apple Card, Apple Wallet, Apple Shortcuts, and App Store are trademarks of Apple Inc., registered in the U.S. and other countries and regions.</li>
+        <li>All other trademarks, service marks, trade names, logos, and brand identities appearing in screenshots — including but not limited to HSBC, Mastercard, Bank of China, China Merchants Bank, American Express, and Starbucks — are the property of their respective owners. Their appearance in user-uploaded content does not imply any affiliation with, endorsement of, or sponsorship by those companies.</li>
+        <li>iCloud syncing requires an Apple ID and iCloud account. Data syncing uses your iCloud storage.</li>
+        <li>WeChat Pay and Alipay bill import supports CSV and XLSX formats exported from the respective platforms. WeTally is not affiliated with Tencent or Ant Group.</li>
+        <li>Subscription prices may vary by region. Payment will be charged to your Apple ID account. Subscriptions automatically renew unless canceled at least 24 hours before the end of the current period. Free trial available for new subscribers only.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Terms of Use</a>
+        <a href="mailto:wetallyapp@outlook.com">Contact Us</a>
+        <a href="https://github.com/HuangRunHua/TallyApp" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <hr class="footer-divider">
+      <p class="footer-copy">Copyright &copy; 2026 WeTally. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script>
+    (function(){
+
+      /* ---- NAV: dark mode when over dark sections ---- */
+      var nav = document.getElementById('globalNav');
+      var darkSections = document.querySelectorAll('.section--dark, .analytics-section, .savings-section, .import-section, .sticky-showcase');
+
+      function updateNavTheme() {
+        var navBottom = nav.getBoundingClientRect().bottom;
+        var isDark = false;
+        darkSections.forEach(function(sec) {
+          var rect = sec.getBoundingClientRect();
+          if (rect.top < navBottom && rect.bottom > navBottom) isDark = true;
+        });
+        nav.classList.toggle('dark-mode', isDark);
+      }
+
+      /* ---- SCROLL REVEAL ---- */
+      var revealObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+      document.querySelectorAll('.reveal').forEach(function(el) {
+        revealObserver.observe(el);
+      });
+
+      /* ---- COUNTER ANIMATION ---- */
+      var counterObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) return;
+          var el = entry.target;
+          var target = parseInt(el.getAttribute('data-target'), 10);
+          if (isNaN(target)) return;
+          var startTime = null;
+          var duration = 1200;
+          function animate(ts) {
+            if (!startTime) startTime = ts;
+            var progress = Math.min((ts - startTime) / duration, 1);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.round(eased * target);
+            if (progress < 1) requestAnimationFrame(animate);
+          }
+          requestAnimationFrame(animate);
+          counterObserver.unobserve(el);
+        });
+      }, { threshold: 0.5 });
+
+      document.querySelectorAll('.counter').forEach(function(el) {
+        counterObserver.observe(el);
+      });
+
+      /* ---- CHART BAR ANIMATION ---- */
+      var chartObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.querySelectorAll('.chart-bar').forEach(function(bar, i) {
+            setTimeout(function() {
+              bar.style.height = bar.getAttribute('data-height');
+            }, i * 80);
+          });
+          chartObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.3 });
+
+      var budgetChart = document.getElementById('budgetChart');
+      if (budgetChart) chartObserver.observe(budgetChart);
+
+      /* ---- PROGRESS RING ANIMATION ---- */
+      var ringObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (!entry.isIntersecting) return;
+          var ring = document.getElementById('progressRing');
+          var percentEl = document.getElementById('ringPercent');
+          if (!ring) return;
+          var circumference = 553;
+          var targetPercent = 73;
+          var targetOffset = circumference - (circumference * targetPercent / 100);
+          ring.style.strokeDashoffset = targetOffset;
+
+          var startTime = null;
+          var duration = 2000;
+          function animate(ts) {
+            if (!startTime) startTime = ts;
+            var progress = Math.min((ts - startTime) / duration, 1);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            percentEl.textContent = Math.round(eased * targetPercent) + '%';
+            if (progress < 1) requestAnimationFrame(animate);
+          }
+          requestAnimationFrame(animate);
+          ringObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.5 });
+
+      var ringContainer = document.querySelector('.progress-ring-container');
+      if (ringContainer) ringObserver.observe(ringContainer);
+
+      /* ---- STICKY SHOWCASE (Apple-style paginated scroll) ---- */
+      var showcase = document.getElementById('stickyShowcase');
+      if (showcase && window.innerWidth >= 769) {
+        var textSlides = showcase.querySelectorAll('.showcase-slide');
+        var phoneImgs = showcase.querySelectorAll('.showcase-phone-wrap .phone-img');
+        var dots = showcase.querySelectorAll('.showcase-dot');
+        var totalSlides = textSlides.length;
+        var currentSlide = -1;
+
+        function updateShowcase() {
+          var rect = showcase.getBoundingClientRect();
+          var scrollableHeight = showcase.offsetHeight - window.innerHeight;
+          var scrolled = -rect.top;
+          var progress = Math.max(0, Math.min(1, scrolled / scrollableHeight));
+          var slideIndex = Math.min(Math.floor(progress * totalSlides), totalSlides - 1);
+
+          if (slideIndex !== currentSlide) {
+            currentSlide = slideIndex;
+
+            textSlides.forEach(function(slide, i) {
+              slide.classList.remove('active', 'above', 'below');
+              if (i === slideIndex) slide.classList.add('active');
+              else if (i < slideIndex) slide.classList.add('above');
+              else slide.classList.add('below');
+            });
+
+            phoneImgs.forEach(function(img, i) {
+              img.classList.remove('active', 'above', 'below');
+              if (i === slideIndex) img.classList.add('active');
+              else if (i < slideIndex) img.classList.add('above');
+              else img.classList.add('below');
+            });
+
+            dots.forEach(function(dot, i) {
+              dot.classList.toggle('active', i === slideIndex);
+            });
+          }
+        }
+
+        window.addEventListener('scroll', function() {
+          requestAnimationFrame(updateShowcase);
+        }, { passive: true });
+      }
+
+      /* ---- PARALLAX HERO DEVICE ---- */
+      var heroDevice = document.querySelector('.hero-device');
+      if (heroDevice) {
+        window.addEventListener('scroll', function() {
+          var scrollY = window.pageYOffset;
+          if (scrollY < window.innerHeight) {
+            heroDevice.style.transform = 'translateY(' + (scrollY * 0.15) + 'px)';
+          }
+        }, { passive: true });
+      }
+
+      /* ---- NAV THEME UPDATE ON SCROLL ---- */
+      window.addEventListener('scroll', function() {
+        requestAnimationFrame(updateNavTheme);
+      }, { passive: true });
+      updateNavTheme();
+
+    })();
+  </script>
+</body>
+</html>
